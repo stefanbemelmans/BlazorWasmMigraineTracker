@@ -1,0 +1,71 @@
+@page "/WeatherForecasts"
+
+  <PageTitle>Weather Forecasts</PageTitle>
+
+    <Button Variant=Button.ButtonVariant.Default @onclick=@GetCurrentWeather>I HAVE MIGRAINE!</Button>
+    @if (@WeatherForecastsState.Location == null)
+    {
+      <p><em>Loading...</em></p>
+    }
+    else
+    {
+      <table class="mt-4 min-w-full divide-y divide-gray-200" data-qa="WeatherForecastTable">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Region</th>
+            <th>Country</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
+            <th>Local Time</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr>
+            <td>@WeatherForecastsState.Location.name</td>
+            <td>@WeatherForecastsState.Location.region</td>
+            <td>@WeatherForecastsState.Location.country</td>
+            <td>@WeatherForecastsState.Location.lat</td>
+            <td>@WeatherForecastsState.Location.lon</td>
+            <td>@WeatherForecastsState.Location.localtime</td>
+          </tr>
+        </tbody>
+      </table>
+    }
+
+    @if (@WeatherForecastsState.Current == null)
+    {
+      <p><em>Loading...</em></p>
+    }
+    else
+    {
+      <table class="mt-4 min-w-full divide-y divide-gray-200" data-qa="WeatherForecastTable">
+        <thead>
+          <tr>
+            <th>LastUpdated</th>
+            <th>Condition</th>
+            <th>Cloud Percentage</th>
+            <th>Humidity</th>
+            <th>PressureIn</th>
+            <th>PressureMb</th>
+            <th>TempF</th>
+            <th>Feels Like F</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr>
+            <td>@WeatherForecastsState.Current.last_updated</td>
+            <td>@WeatherForecastsState.Current.condition.text</td>
+            <td>@WeatherForecastsState.Current.cloud</td>
+            <td>@WeatherForecastsState.Current.humidity</td>
+            <td>@WeatherForecastsState.Current.pressure_in</td>
+            <td>@WeatherForecastsState.Current.pressure_mb</td>
+            <td>@WeatherForecastsState.Current.temp_f</td>
+            <td>@WeatherForecastsState.Current.feelslike_f</td>
+          </tr>
+        </tbody>
+      </table>
+    }
+    <div class="flex justify-items-start">
+      <div id="curve_chart"></div>
+    </div>
