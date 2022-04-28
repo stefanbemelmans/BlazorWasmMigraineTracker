@@ -1,0 +1,113 @@
+﻿@page "/WeatherInfo"
+@using BlazorWasmMigraineTracker.Dtos.Weather
+@using System.Text.Json
+@using BlazorWasmMigraineTracker.Pages.Components
+@using BlazorWasmMigraineTracker.WeatherApi
+<PageTitle>Weather Info</PageTitle>
+
+
+<h3>WeatherInfo</h3>
+<Button Variant=Button.ButtonVariant.Default @onclick=GetCurrentWeather>I HAVE MIGRAINE!</Button>
+    @if (@CurrentWeather.Location == null)
+   {
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <h3>@CurrentWeather.Location.name</h3>
+}
+  else
+    {
+      <table class="mt-4 min-w-full divide-y divide-gray-200" data-qa="WeatherForecastTable">
+        <thead>
+          <tr>
+            <TableHeader>Name</TableHeader>
+            <TableHeader>Region</TableHeader>
+            <TableHeader>Country</TableHeader>
+            <TableHeader>Latitude</TableHeader>
+            <TableHeader>Longitude</TableHeader>
+            <TableHeader>Local Time</TableHeader>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr>
+            <Cell>@CurrentWeather.Location.name</Cell>
+            <Cell>@CurrentWeather.Location.region</Cell>
+            <Cell>@CurrentWeather.Location.country</Cell>
+            <Cell>@CurrentWeather.Location.lat</Cell>
+            <Cell>@CurrentWeather.Location.lon</Cell>
+            <Cell>@CurrentWeather.Location.localtime</Cell>
+          </tr>
+        </tbody>
+      </table>
+    }
+
+    @if (@CurrentWeather.Current == null)
+    {
+      <p><em>Loading...</em></p>
+    }
+    else
+    {
+      <table class="mt-4 min-w-full divide-y divide-gray-200" data-qa="WeatherForecastTable">
+        <thead>
+          <tr>
+            <TableHeader>LastUpdated</TableHeader>
+            <TableHeader>Condition</TableHeader>
+            <TableHeader>Cloud Percentage</TableHeader>
+            <TableHeader>Humidity</TableHeader>
+            <TableHeader>PressureIn</TableHeader>
+            <TableHeader>PressureMb</TableHeader>
+            <TableHeader>TempF</TableHeader>
+            <TableHeader>Feels Like F</TableHeader>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr>
+            <Cell>@CurrentWeather.Current.last_updated</Cell>
+            <Cell>@CurrentWeather.Current.condition.text</Cell>
+            <Cell>@CurrentWeather.Current.cloud</Cell>
+            <Cell>@CurrentWeather.Current.humidity</Cell>
+            <Cell>@CurrentWeather.Current.pressure_in</Cell>
+            <Cell>@CurrentWeather.Current.pressure_mb</Cell>
+            <Cell>@CurrentWeather.Current.temp_f</Cell>
+            <Cell>@CurrentWeather.Current.feelslike_f</Cell>
+          </tr>
+        </tbody>
+      </table>
+    }
+@code {
+
+
+    public GetCurrentWeatherResponse CurrentWeather { get; set; } = new GetCurrentWeatherResponse();
+
+    WeatherApiHttpClient Client = new WeatherApiHttpClient();
+
+    const string Key = "5da885db7bd34ac6b09212117210412&";
+
+    string Zip { get; set; } = "01027";
+
+    int Days { get; set; } = 1;
+
+    string GetApiForecastRoute() => string.Format($"http://api.weatherapi.com/v1/current/key={Key}&q={Zip}&days={Days}");
+    Uri uri = new Uri("https://api.weatherapi.com/v1/current.json?key=5da885db7bd34ac6b09212117210412&q=01027");
+    public async Task<GetCurrentWeatherResponse> GetCurrentWeather()
+    {
+        Console.WriteLine("InGet Current Weather");
+        var url = GetApiForecastRoute();
+
+        System.Net.Http.HttpResponseMessage responseMessage = await Client.WeatherApiClient.GetAsync(uri);
+
+        responseMessage.EnsureSuccessStatusCode();
+        string stringResponse = await responseMessage.Content.ReadAsStringAsync();
+
+        CurrentWeather = JsonSerializer.Deserialize<GetCurrentWeatherResponse>(stringResponse);
+
+        return CurrentWeather ?? new GetCurrentWeatherResponse() ;
+    }
+    
+    
+    protected override async Task OnInitializedAsync() => await GetCurrentWeather();
+
+
+
+}
